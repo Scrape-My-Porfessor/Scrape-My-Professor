@@ -81,7 +81,7 @@ def rateMyProfessor(professor_name):
             formattedAgain = f"{round(professor.would_take_again, 1)}%"
         #Colored box cases for rating
         st.header("Rating")
-        if 0 <= rating < 2.0:
+        if 0 <= rating <= 2.0:
             st.markdown(colored_box(formattedRating, '#eb2d3a'), unsafe_allow_html=True)
         elif 2.0 < rating < 4.0:
             st.markdown(colored_box(formattedRating, '#ffec00'), unsafe_allow_html=True)
@@ -91,7 +91,7 @@ def rateMyProfessor(professor_name):
             st.markdown(colored_box(formattedRating, '#808588'), unsafe_allow_html=True)     
         #Colored box cases for difficulty
         st.header("Difficulty")
-        if 0 <= difficulty < 2.0:
+        if 0 <= difficulty <= 2.0:
             st.markdown(colored_box(formattedDifficulty, '#50b458'), unsafe_allow_html=True)
         elif 2.0 < difficulty < 4.0:
             st.markdown(colored_box(formattedDifficulty, '#ffec00'), unsafe_allow_html=True)
@@ -101,7 +101,7 @@ def rateMyProfessor(professor_name):
             st.markdown(colored_box(formattedDifficulty, '#808588'), unsafe_allow_html=True)     
         #Colored box cases for would take again
         st.header("Would Take Again")
-        if 0 <= again < 50:
+        if 0 <= again <= 50:
             st.markdown(colored_box(formattedAgain, '#eb2d3a'), unsafe_allow_html=True)
         elif 50 < again < 70:
             st.markdown(colored_box(formattedAgain, '#ffec00'), unsafe_allow_html=True)

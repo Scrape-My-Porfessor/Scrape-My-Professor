@@ -3,6 +3,7 @@ import pandas as pd
 import json
 import ratemyprofessor
 from streamlit_echarts import st_echarts
+import plotly.express as px
 # Load the JSON data into a pandas DataFrame
 with open("complete.json", "r") as json_file:
     data = json.load(json_file)
@@ -86,37 +87,47 @@ def rateMyProfessor(professor_name):
 
 def gradeJSON(professor_name, class_name):
     # Filter the DataFrame for the specific professor and class
-            filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
+    filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
 
-            if not filtered_data.empty:
-                # Combine grades for all terms
-                combined_grades = {
-                    "A": 0,
-                    "B": 0,
-                    "C": 0,
-                    "D": 0,
-                    "F": 0,
-                    "W": 0
-                }
+    if not filtered_data.empty:
+        # Combine grades for all terms
+        combined_grades = {
+            "A": 0,
+            "B": 0,
+            "C": 0,
+            "D": 0,
+            "F": 0,
+            "W": 0
+        }
 
-                for index, row in filtered_data.iterrows():
-                    term_grades = row["grades"]
-                    for grade, count in term_grades.items():
-                        # Convert grades to integers before addition
-                        if grade in combined_grades:
-                            combined_grades[grade] += int(count)
+        for index, row in filtered_data.iterrows():
+            term_grades = row["grades"]
+            for grade, count in term_grades.items():
+                # Convert grades to integers before addition
+                if grade in combined_grades:
+                    combined_grades[grade] += int(count)
 
-                # Create a bar chart for combined grades using st_echarts
-                options = {
-                    "xAxis": {"type": "category", "data": list(combined_grades.keys())},
-                    "yAxis": {"type": "value"},
-                    "series": [
-                        {"data": list(combined_grades.values()), "type": "bar", "name": "Grades", "itemStyle": {"color": "blue"}},
-                    ],
-                }
-                st_echarts(options=options, height="500px")
-            else:
-                st.title("No matching results found for the specified professor and class.")
+        # Create a bar chart for combined grades using Plotly
+        df_combined = pd.DataFrame({
+            'Grade': list(combined_grades.keys()),
+            'Count': list(combined_grades.values())
+        })
+
+        fig = px.bar(
+            df_combined, x='Grade', y='Count',
+            color='Grade',
+            labels={'Count': 'Count', 'Grade': 'Grades'},
+            color_discrete_map={'A': 'green', 'B': 'yellow', 'C': 'orange', 'D': 'maroon', 'F': 'red', 'W': 'grey'},
+        )
+        if compare == 0:
+            fig.update_layout(width=700)
+        else:
+            fig.update_layout(width=350)        
+        st.plotly_chart(fig)
+
+    else:
+        st.write("No matching results found for the specified professor and class.")
+
 
 def pi(professor_name, class_name):
             ##########################################Pie Chart#################################################
@@ -157,14 +168,15 @@ def pi(professor_name, class_name):
                         drop_count += count
                 #Create the pie chart
                 options = {
-                    "title": {"text": "Pass/Fail/Drop", "left": "center"},
-                    "tooltip": {"trigger": "item"},
-                    "legend": {"orient": "vertical", "left": "left"},
+                    "title": {"text": "Pass/Fail/Drop", "left": "center", "top": "37%"},
+                    "tooltip": {"trigger": "item", "top": "37%"},
+                    "legend": {"orient": "vertical", "left": "left", "top": "37%"},
                     "series": [
                         {
                             "name": "Pass/Fail/Drop",
                             "type": "pie",
-                            "radius": "50%",
+                            "radius": "70%",
+                            "top": "40%",
                             "data": [
                                 {"value": pass_count, "name": "Pass", "itemStyle": {"color": "green"}},
                                 {"value": fail_count, "name": "Fail", "itemStyle": {"color": "red"}},
@@ -183,16 +195,10 @@ def pi(professor_name, class_name):
 
                 # Render the pie chart
                 st_echarts(
-                    options=options, height="600px",
+                    options=options, height="600px"
                 )
             else:
                 st.write("")
-
-
-if title == 0:
-    st.markdown('<h1 style="{}">Welcome to Scrape My Professor</h1>'.format(title_style), unsafe_allow_html=True)
-    st.markdown('<h2 style="{}">(UNT Edition)</h2>'.format(header_style), unsafe_allow_html=True)
-    st.markdown('<h1 style="{}">Please Enter Professor or Class Name</h1>'.format(title_style), unsafe_allow_html=True)           
 
 st.sidebar.header("Search for a Professor or Class")
 if st.sidebar.checkbox("Compare"):
@@ -254,3 +260,8 @@ else:
             gradeJSON(professor_name, class_name)
             with col4:  
                 pi(professor_name, class_name)  
+
+if title == 0:
+    st.markdown('<h1 style="{}">Welcome to Scrape My Professor</h1>'.format(title_style), unsafe_allow_html=True)
+    st.markdown('<h2 style="{}">(UNT Edition)</h2>'.format(header_style), unsafe_allow_html=True)
+    st.markdown('<h1 style="{}">Please Enter Professor or Class Name</h1>'.format(title_style), unsafe_allow_html=True)           

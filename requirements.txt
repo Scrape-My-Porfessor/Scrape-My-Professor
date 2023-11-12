@@ -1,0 +1,6 @@
+streamlit
+pandas
+json
+ratemyprofessor
+st_echarts
+plotly.express

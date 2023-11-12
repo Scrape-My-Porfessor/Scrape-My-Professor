@@ -29,7 +29,8 @@ again = 0.0
 formattedAgain = "N/A"
 
 title_style = 'text-align: center;'
-header_style = 'text-align: center; color: green;'
+header_style = 'text-align: center; color: #00853E;'
+subheader_style = 'color: #00853E;'
 
 
 def colored_box(value, color):
@@ -42,48 +43,66 @@ def checkFields(name1, name2):
 def rateMyProfessor(professor_name):
     professor = ratemyprofessor.get_professor_by_school_and_name(ratemyprofessor.get_school_by_name("University of North Texas"), professor_name)
     if professor is None:
-        st.title("Professor Not Found!")
+        st.write("Professor Not Found!")
     else: 
         if compare == 1:
             st.title(f"Professor {professor_name}")
         else:    
-            st.title(f"Professor {professor_name} of the %s Department." % (professor.department))   
-        rating = float(professor.rating)
-        formattedRating = "%.1f / 5.0" % professor.rating
+            st.title(f"Professor {professor_name} of the %s Department." % (professor.department))
 
-        difficulty = float(professor.difficulty)
-        formattedDifficulty = "%.1f / 5.0" % professor.difficulty
+        if professor.rating == -1:
+            rating = float(-1)
+            formattedRating = f"N/A"
+        else:          
+            rating = float(professor.rating)
+            formattedRating = "%.1f / 5.0" % professor.rating
+
+        if professor.difficulty == -1:
+            difficulty = float(-1)
+            formattedDifficulty = f"N/A"
+        else:    
+            difficulty = float(professor.difficulty)
+            formattedDifficulty = "%.1f / 5.0" % professor.difficulty
 
         if professor.would_take_again is None:
             again = float(0)
             formattedAgain = f"0%"
+        elif professor.would_take_again == -1:
+            again = float(-1)
+            formattedAgain = f"N/A"    
         else:    
             again = float(professor.would_take_again)
             formattedAgain = f"{round(professor.would_take_again, 1)}%"
 
         st.header("Rating")
-        if rating < 2.0:
+        if 0 <= rating < 2.0:
             st.markdown(colored_box(formattedRating, '#eb2d3a'), unsafe_allow_html=True)
         elif 2.0 < rating < 4.0:
             st.markdown(colored_box(formattedRating, '#ffec00'), unsafe_allow_html=True)
         elif rating >= 4.0:
             st.markdown(colored_box(formattedRating, '#50b458'), unsafe_allow_html=True)
+        elif rating < 0:
+            st.markdown(colored_box(formattedRating, '#808588'), unsafe_allow_html=True)     
 
         st.header("Difficulty")
-        if difficulty < 2.0:
+        if 0 <= difficulty < 2.0:
             st.markdown(colored_box(formattedDifficulty, '#50b458'), unsafe_allow_html=True)
         elif 2.0 < difficulty < 4.0:
             st.markdown(colored_box(formattedDifficulty, '#ffec00'), unsafe_allow_html=True)
         elif difficulty >= 4.0:
             st.markdown(colored_box(formattedDifficulty, '#eb2d3a'), unsafe_allow_html=True)
+        elif difficulty < 0:
+            st.markdown(colored_box(formattedDifficulty, '#808588'), unsafe_allow_html=True)     
 
         st.header("Would Take Again")
-        if again < 50:
+        if 0 <= again < 50:
             st.markdown(colored_box(formattedAgain, '#eb2d3a'), unsafe_allow_html=True)
         elif 50 < again < 70:
             st.markdown(colored_box(formattedAgain, '#ffec00'), unsafe_allow_html=True)
         elif again >= 70:
             st.markdown(colored_box(formattedAgain, '#50b458'), unsafe_allow_html=True)
+        elif again < 0:
+            st.markdown(colored_box(formattedAgain, '#808588'), unsafe_allow_html=True)    
 
 def gradeJSON(professor_name, class_name):
     # Filter the DataFrame for the specific professor and class
@@ -200,18 +219,20 @@ def pi(professor_name, class_name):
             else:
                 st.write("")
 
+st.sidebar.title("Scrape My Professors")
+st.sidebar.markdown('<h2 style="{}">(UNT Edition)</h2>'.format(subheader_style), unsafe_allow_html=True)
 st.sidebar.header("Search for a Professor or Class")
 if st.sidebar.checkbox("Compare"):
-    professor_name2 = st.sidebar.text_input("(Additional) Professor Name", placeholder = "First Last")
-    class_name2 = st.sidebar.text_input("(Additional) Class Name", placeholder = "Class Name")
     professor_name = st.sidebar.text_input("Professor Name", placeholder = "First Last")
     class_name = st.sidebar.text_input("Class Name", placeholder = "Class Name")
+    professor_name2 = st.sidebar.text_input("(Additional) Professor Name", placeholder = "First Last")
+    class_name2 = st.sidebar.text_input("(Additional) Class Name", placeholder = "Class Name")
     if st.sidebar.button("Compare"):
         title = 1
         if checkFields(professor_name, professor_name2):
-            st.text("Fields are the same!")
+            st.title("Fields are the same!")
         elif checkFields(class_name, class_name2):
-            st.text("Fields are the same!")
+            st.title("Fields are the same!")
         else:    
             compare = 1
             with col1:
@@ -262,6 +283,6 @@ else:
                 pi(professor_name, class_name)  
 
 if title == 0:
-    st.markdown('<h1 style="{}">Welcome to Scrape My Professor</h1>'.format(title_style), unsafe_allow_html=True)
+    st.markdown('<h1 style="{}">Welcome to Scrape My Professors</h1>'.format(title_style), unsafe_allow_html=True)
     st.markdown('<h2 style="{}">(UNT Edition)</h2>'.format(header_style), unsafe_allow_html=True)
-    st.markdown('<h1 style="{}">Please Enter Professor or Class Name</h1>'.format(title_style), unsafe_allow_html=True)           
+    st.markdown('<h1 style="{}">Enter Professor or Class Name</h1>'.format(title_style), unsafe_allow_html=True)           

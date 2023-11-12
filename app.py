@@ -1,7 +1,14 @@
 import streamlit as st
 import pandas as pd
+import json
 import ratemyprofessor
 
+# Load the JSON data into a pandas DataFrame
+with open("complete.json", "r") as json_file:
+    data = json.load(json_file)
+
+# Convert the JSON data to a DataFrame
+df = pd.DataFrame(data)
 
 # Streamlit UI
 st.title("Rate My Professor Visualization")
@@ -20,11 +27,10 @@ formattedAgain = "N/A"
 def colored_box(value, color):
     return f'<div style="background-color:{color}; padding:10px; border-radius:10px; max-width: 80px; text-align: center;">{value}</div>'
 
-
 # Sidebar for adding a class
 st.sidebar.header("Search for a Professor or Class")
 professor_name = st.sidebar.text_input("Professor Name")
-class_name = st.sidebar.text_input("Class Code")
+class_name = st.sidebar.text_input("Class Name")
 if st.sidebar.button("Search"):
     if professor_name:
         professor = ratemyprofessor.get_professor_by_school_and_name(ratemyprofessor.get_school_by_name("University of North Texas"), professor_name)
@@ -37,8 +43,12 @@ if st.sidebar.button("Search"):
             difficulty = float(professor.difficulty)
             formattedDifficulty = "%.1f / 5.0" % professor.difficulty
 
-            again = float(professor.would_take_again)
-            formattedAgain = f"{round(professor.would_take_again, 1)}%"
+            if professor.would_take_again is None:
+                again = float(0)
+                formattedAgain = f"0%"
+            else:    
+                again = float(professor.would_take_again)
+                formattedAgain = f"{round(professor.would_take_again, 1)}%"
 
             container.header("Rating")
             if rating < 2.0:
@@ -50,11 +60,11 @@ if st.sidebar.button("Search"):
 
             container.header("Difficulty")
             if difficulty < 2.0:
-                container.markdown(colored_box(formattedDifficulty, 'red'), unsafe_allow_html=True)
+                container.markdown(colored_box(formattedDifficulty, 'green'), unsafe_allow_html=True)
             elif 2.0 < difficulty < 4.0:
                 container.markdown(colored_box(formattedDifficulty, 'yellow'), unsafe_allow_html=True)
             elif difficulty >= 4.0:
-                container.markdown(colored_box(formattedDifficulty, 'green'), unsafe_allow_html=True)
+                container.markdown(colored_box(formattedDifficulty, 'red'), unsafe_allow_html=True)
 
             container.header("Would Take Again")
             if again < 50:
@@ -65,4 +75,17 @@ if st.sidebar.button("Search"):
                 container.markdown(colored_box(formattedAgain, 'green'), unsafe_allow_html=True)
 
             st.sidebar.text("Professor Found!")
-    
+
+            st.subheader(f"Grades for Professor: {professor_name} and Class: {class_name}")
+
+            # Filter the DataFrame for the specific professor and class
+            filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
+
+            if not filtered_data.empty:
+
+                # Create a bar chart for grades
+                if "grades" in filtered_data.columns:
+                    grades = filtered_data["grades"].apply(pd.Series).astype(float)
+                    st.bar_chart(grades.T, use_container_width=True)
+            else:
+                st.write("No matching results found for the specified professor and class.")

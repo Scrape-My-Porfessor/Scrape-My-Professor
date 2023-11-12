@@ -126,6 +126,7 @@ def gradeJSON(professor_name, class_name):
             "W": 0
         }
 
+        #Adds up grades from all the terms
         for index, row in filtered_data.iterrows():
             term_grades = row["grades"]
             for grade, count in term_grades.items():
@@ -138,7 +139,7 @@ def gradeJSON(professor_name, class_name):
             'Grade': list(combined_grades.keys()),
             'Count': list(combined_grades.values())
         })
-
+        #Color for each bar
         fig = px.bar(
             df_combined, x='Grade', y='Count',
             color='Grade',

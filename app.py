@@ -108,8 +108,30 @@ def gradeJSON(professor_name, class_name):
                 st_echarts(options=options, height="500px")
             else:
                 st.write("No matching results found for the specified professor and class.")
+
+def pi(professor_name, class_name):
             ##########################################Pie Chart#################################################
             #Pass/Fail/Drop grades
+            filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
+
+            if not filtered_data.empty:
+                # Combine grades for all terms
+                combined_grades = {
+                    "A": 0,
+                    "B": 0,
+                    "C": 0,
+                    "D": 0,
+                    "F": 0,
+                    "W": 0
+                }
+
+                for index, row in filtered_data.iterrows():
+                    term_grades = row["grades"]
+                    for grade, count in term_grades.items():
+                        # Convert grades to integers before addition
+                        if grade in combined_grades:
+                            combined_grades[grade] += int(count)
+
             pass_fail_drop = {
                 "Pass": ["A", "B", "C"],
                 "Fail": ["D", "F"],
@@ -170,9 +192,11 @@ if st.sidebar.checkbox("Compare"):
                 else:
                     st.subheader(f"Grades for {class_name} by Professor {professor_name}")    
                 gradeJSON(professor_name, class_name)
+                pi(professor_name, class_name)
             elif class_name:
                 st.subheader(f"Grades for {class_name}")
                 gradeJSON(professor_name, class_name)   
+                pi(professor_name, class_name) 
         with col2:         
             if professor_name2:
                 rateMyProfessor(professor_name2)
@@ -181,9 +205,11 @@ if st.sidebar.checkbox("Compare"):
                 else:
                     st.subheader(f"Grades for {class_name2} by Professor {professor_name2}")    
                 gradeJSON(professor_name2, class_name2)
+                pi(professor_name2, class_name2)
             elif class_name2:
                 st.subheader(f"Grades for {class_name2}")
-                gradeJSON(professor_name2, class_name2)     
+                gradeJSON(professor_name2, class_name2)  
+                pi(professor_name2, class_name2)   
 else:    
     professor_name = st.sidebar.text_input("Professor Name")
     class_name = st.sidebar.text_input("Class Name")
@@ -195,6 +221,8 @@ else:
             else:
                 st.subheader(f"Grades for {class_name} by Professor {professor_name}")    
             gradeJSON(professor_name, class_name)
+            pi(professor_name, class_name)
         elif class_name:
             st.subheader(f"Grades for {class_name}")
-            gradeJSON(professor_name, class_name)    
+            gradeJSON(professor_name, class_name)  
+            pi(professor_name, class_name)  

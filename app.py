@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import json
 import ratemyprofessor
-from streamlit_echarts import st_echarts
 
 # Load the JSON data into a pandas DataFrame
 with open("complete.json", "r") as json_file:
@@ -70,40 +69,15 @@ def rateMyProfessor(professor_name):
             container.markdown(colored_box(formattedAgain, 'green'), unsafe_allow_html=True)
 
 def gradeJSON(professor_name, class_name):
-            st.sidebar.text("Professor Found!")
+    filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
 
-            # Filter the DataFrame for the specific professor and class
-            filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
-
-            if not filtered_data.empty:
-                # Combine grades for all terms
-                combined_grades = {
-                    "A": 0,
-                    "B": 0,
-                    "C": 0,
-                    "D": 0,
-                    "F": 0,
-                    "W": 0
-                }
-
-                for index, row in filtered_data.iterrows():
-                    term_grades = row["grades"]
-                    for grade, count in term_grades.items():
-                        # Convert grades to integers before addition
-                        combined_grades[grade] += int(count)
-
-                # Create a bar chart for combined grades using st_echarts
-                options = {
-                    "xAxis": {"type": "category", "data": list(combined_grades.keys())},
-                    "yAxis": {"type": "value"},
-                    "series": [
-                        {"data": list(combined_grades.values()), "type": "bar", "name": "Grades", "itemStyle": {"color": "blue"}},
-                    ],
-                }
-                st_echarts(options=options, height="500px")
-            else:
-                st.write("No matching results found for the specified professor and class.")
-
+    if filtered_data.empty:
+        st.text("No matching grades found for professor or class")
+    else:
+        # Create a bar chart for grades
+        if "grades" in filtered_data.columns:
+            grades = filtered_data["grades"].apply(pd.Series).astype(float)
+            st.bar_chart(grades.T, use_container_width=True)
 
 st.sidebar.header("Search for a Professor or Class")
 professor_name = st.sidebar.text_input("Professor Name")

@@ -1,4 +1,4 @@
 streamlit
 pandas
-ratemyprofessor
+ratemyprofessor==1.0.0
 plotly.express

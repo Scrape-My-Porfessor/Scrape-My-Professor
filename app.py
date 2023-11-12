@@ -108,7 +108,52 @@ def gradeJSON(professor_name, class_name):
                 st_echarts(options=options, height="500px")
             else:
                 st.write("No matching results found for the specified professor and class.")
+            ##########################################Pie Chart#################################################
+            #Pass/Fail/Drop grades
+            pass_fail_drop = {
+                "Pass": ["A", "B", "C"],
+                "Fail": ["D", "F"],
+                "Drop": ["W"]
+            }
+            pass_count = fail_count = drop_count = 0
+            #Combines Pass/Fail/Drop grades
+            for grade, count in combined_grades.items():
+                if grade in pass_fail_drop["Pass"]:
+                    pass_count += count
+                elif grade in pass_fail_drop["Fail"]:
+                    fail_count += count
+                elif grade in pass_fail_drop["Drop"]:
+                    drop_count += count
+            #Create the pie chart
+            options = {
+                "title": {"text": "Pass/Fail/Drop", "left": "center"},
+                "tooltip": {"trigger": "item"},
+                "legend": {"orient": "vertical", "left": "left"},
+                "series": [
+                    {
+                        "name": "Pass/Fail/Drop",
+                        "type": "pie",
+                        "radius": "50%",
+                        "data": [
+                            {"value": pass_count, "name": "Pass", "itemStyle": {"color": "green"}},
+                            {"value": fail_count, "name": "Fail", "itemStyle": {"color": "red"}},
+                            {"value": drop_count, "name": "Drop", "itemStyle": {"color": "yellow"}},
+                        ],
+                        "emphasis": {
+                            "itemStyle": {
+                                "shadowBlur": 10,
+                                "shadowOffsetX": 0,
+                                "shadowColor": "rgba(0, 0, 0, 0.5)",
+                            }
+                        },
+                    }
+                ],
+            }
 
+            # Render the pie chart
+            st_echarts(
+                options=options, height="600px",
+            )
 st.sidebar.header("Search for a Professor or Class")
 if st.sidebar.checkbox("Compare"):
     professor_name2 = st.sidebar.text_input("(Additional) Professor Name")

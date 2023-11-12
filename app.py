@@ -4,42 +4,48 @@ import json
 import ratemyprofessor
 from streamlit_echarts import st_echarts
 import plotly.express as px
-# Load the JSON data into a pandas DataFrame
+
+#Load JSON data from file
 with open("complete.json", "r") as json_file:
     data = json.load(json_file)
 
-# Convert the JSON data to a DataFrame
+#Load data into dataframe
 df = pd.DataFrame(data)
 
+#Bool variables for if statements
 compare = 0
 title = 0
 
+#Streamlits columns
 col1, col2 = st.columns(2)
 col3, col4 = st.columns([0.6, 0.4])
 
-container = st.container()
-
+#Variables for ratings
 rating = 0.0
 formattedRating = "N/A"
 
+#Variables for difficulty
 difficulty = 0.0
 formattedDifficulty = "N/A"
 
+#Variables for would take again
 again = 0.0
 formattedAgain = "N/A"
 
+#Styles for titles and headers
 title_style = 'text-align: center;'
 header_style = 'text-align: center; color: #00853E;'
 subheader_style = 'color: #00853E;'
 
-
+#Function to create colored box
 def colored_box(value, color):
     return f'<div style="background-color:{color}; padding:10px; border-radius:10px; max-width: 80px; text-align: center;">{value}</div>'
 
-
+#Function to check for blank fields or matching fields
 def checkFields(name1, name2):
     return name1.strip().lower() == name2.strip().lower() if name1 and name2 else False
 
+#Function to get Rate My Professors Data
 def rateMyProfessor(professor_name):
     professor = ratemyprofessor.get_professor_by_school_and_name(ratemyprofessor.get_school_by_name("University of North Texas"), professor_name)
     if professor is None:
@@ -104,6 +110,7 @@ def rateMyProfessor(professor_name):
         elif again < 0:
             st.markdown(colored_box(formattedAgain, '#808588'), unsafe_allow_html=True)    
 
+#Function to display Grades in Bar Graph
 def gradeJSON(professor_name, class_name):
     # Filter the DataFrame for the specific professor and class
     filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
@@ -147,7 +154,7 @@ def gradeJSON(professor_name, class_name):
     else:
         st.write("No matching results found for the specified professor and class.")
 
-
+#Function to display Grades in Pie Graph
 def pi(professor_name, class_name):
             ##########################################Pie Chart#################################################
             #Pass/Fail/Drop grades
@@ -219,6 +226,7 @@ def pi(professor_name, class_name):
             else:
                 st.write("")
 
+#Sidebar
 st.sidebar.title("Scrape My Professors")
 st.sidebar.markdown('<h2 style="{}">(UNT Edition)</h2>'.format(subheader_style), unsafe_allow_html=True)
 st.sidebar.header("Search for a Professor or Class")
@@ -241,24 +249,24 @@ if st.sidebar.checkbox("Compare"):
                     if not class_name:
                         st.subheader(f"Grades for Professor {professor_name}")
                     else:
-                        st.subheader(f"Grades for {class_name} by Professor {professor_name}")    
+                        st.subheader(f"Student Grades for {class_name} by Professor {professor_name}")    
                     gradeJSON(professor_name, class_name)
                     pi(professor_name, class_name)
                 elif class_name:
-                    st.subheader(f"Grades for {class_name}")
+                    st.subheader(f"Student Grades for {class_name}")
                     gradeJSON(professor_name, class_name)   
                     pi(professor_name, class_name) 
             with col2:         
                 if professor_name2:
                     rateMyProfessor(professor_name2)
                     if not class_name2:
-                        st.subheader(f"Grades for Professor {professor_name2}")
+                        st.subheader(f"Student Grades for Professor {professor_name2}")
                     else:
-                        st.subheader(f"Grades for {class_name2} by Professor {professor_name2}")    
+                        st.subheader(f"Student Grades for {class_name2} by Professor {professor_name2}")    
                     gradeJSON(professor_name2, class_name2)
                     pi(professor_name2, class_name2)
                 elif class_name2:
-                    st.subheader(f"Grades for {class_name2}")
+                    st.subheader(f"Student Grades for {class_name2}")
                     gradeJSON(professor_name2, class_name2)  
                     pi(professor_name2, class_name2)   
 else:    
@@ -270,18 +278,19 @@ else:
             with col3:
                 rateMyProfessor(professor_name)
             if not class_name:
-                st.subheader(f"Grades for Professor {professor_name}")
+                st.subheader(f"Student Grades for Professor {professor_name}")
             else:
-                st.subheader(f"Grades for {class_name} by Professor {professor_name}")    
+                st.subheader(f"Student Grades for {class_name} by Professor {professor_name}")    
             gradeJSON(professor_name, class_name)
             with col4:
                 pi(professor_name, class_name)
         elif class_name:
-            st.subheader(f"Grades for {class_name}")
+            st.subheader(f"Student Grades for {class_name}")
             gradeJSON(professor_name, class_name)
             with col4:  
                 pi(professor_name, class_name)  
 
+#To make title disappear
 if title == 0:
     st.markdown('<h1 style="{}">Welcome to Scrape My Professors</h1>'.format(title_style), unsafe_allow_html=True)
     st.markdown('<h2 style="{}">(UNT Edition)</h2>'.format(header_style), unsafe_allow_html=True)

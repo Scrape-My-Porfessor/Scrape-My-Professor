@@ -1,5 +1,4 @@
 streamlit
 pandas
 ratemyprofessor
-st_echarts
 plotly.express

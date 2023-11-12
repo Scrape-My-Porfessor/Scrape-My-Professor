@@ -23,6 +23,26 @@ formattedDifficulty = "N/A"
 again = 0.0
 formattedAgain = "N/A"
 
+def search_results(professor_name, data):
+    matching_professors = []
+
+    for course in data:
+        professors = course.get("prof", "")
+        
+        for professor in professors:
+            if professor_name.lower() in professor.lower():
+                matching_professors.append({
+                    "term": course["term"],
+                    "subj": course["subj"],
+                    "num": course["num"],
+                    "sect": course["sect"],
+                    "desc": course["desc"],
+                    "prof": professor,
+                    "grades": course["grades"]
+                })
+    return matching_professors
+
+
 def colored_box(value, color):
     return f'<div style="background-color:{color}; padding:10px; border-radius:10px; max-width: 80px; text-align: center;">{value}</div>'
 
@@ -84,7 +104,21 @@ professor_name = st.sidebar.text_input("Professor Name")
 class_name = st.sidebar.text_input("Class Name")
 if st.sidebar.button("Search"):
     if professor_name:
-        rateMyProfessor(professor_name)
+        results = search_results(professor_name, data)
+        # Page 2: Display Results and Allow User to Choose
+        st.title("Search Results")
+        if not results:
+            st.write("No matching professors found.")
+        else:
+            st.write("Matching Professors:")
+            for i, course in enumerate(results):
+                st.write(f"{i + 1}. {course['prof']}")
+
+            # User chooses the correct professor
+            selected_professor_index = st.selectbox("Select the correct professor", range(1, len(results) + 1)) - 1
+            selected_professor = results[selected_professor_index]
+            rateMyProfessor(professor_name)
+
         if not class_name:
             st.subheader(f"Grades for Professor {professor_name}")
         else:

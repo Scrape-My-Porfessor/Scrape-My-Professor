@@ -247,7 +247,7 @@ if st.sidebar.checkbox("Compare"):
                 if professor_name:
                     rateMyProfessor(professor_name)
                     if not class_name:
-                        st.subheader(f"Grades for Professor {professor_name}")
+                        st.subheader(f"Student Grades for Professor {professor_name}")
                     else:
                         st.subheader(f"Student Grades for {class_name} by Professor {professor_name}")    
                     gradeJSON(professor_name, class_name)

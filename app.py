@@ -55,21 +55,21 @@ def rateMyProfessor(professor_name):
             st.title(f"Professor {professor_name}")
         else:    
             st.title(f"Professor {professor_name} of the %s Department." % (professor.department))
-
+        #Get rating
         if professor.rating == -1:
             rating = float(-1)
             formattedRating = f"N/A"
         else:          
             rating = float(professor.rating)
             formattedRating = "%.1f / 5.0" % professor.rating
-
+        #Get difficulty
         if professor.difficulty == -1:
             difficulty = float(-1)
             formattedDifficulty = f"N/A"
         else:    
             difficulty = float(professor.difficulty)
             formattedDifficulty = "%.1f / 5.0" % professor.difficulty
-
+        #Get would take again
         if professor.would_take_again is None:
             again = float(0)
             formattedAgain = f"0%"
@@ -79,7 +79,7 @@ def rateMyProfessor(professor_name):
         else:    
             again = float(professor.would_take_again)
             formattedAgain = f"{round(professor.would_take_again, 1)}%"
-
+        #Colored box cases for rating
         st.header("Rating")
         if 0 <= rating < 2.0:
             st.markdown(colored_box(formattedRating, '#eb2d3a'), unsafe_allow_html=True)
@@ -89,7 +89,7 @@ def rateMyProfessor(professor_name):
             st.markdown(colored_box(formattedRating, '#50b458'), unsafe_allow_html=True)
         elif rating < 0:
             st.markdown(colored_box(formattedRating, '#808588'), unsafe_allow_html=True)     
-
+        #Colored box cases for difficulty
         st.header("Difficulty")
         if 0 <= difficulty < 2.0:
             st.markdown(colored_box(formattedDifficulty, '#50b458'), unsafe_allow_html=True)
@@ -99,7 +99,7 @@ def rateMyProfessor(professor_name):
             st.markdown(colored_box(formattedDifficulty, '#eb2d3a'), unsafe_allow_html=True)
         elif difficulty < 0:
             st.markdown(colored_box(formattedDifficulty, '#808588'), unsafe_allow_html=True)     
-
+        #Colored box cases for would take again
         st.header("Would Take Again")
         if 0 <= again < 50:
             st.markdown(colored_box(formattedAgain, '#eb2d3a'), unsafe_allow_html=True)
@@ -230,6 +230,7 @@ def pi(professor_name, class_name):
 st.sidebar.title("Scrape My Professors")
 st.sidebar.markdown('<h2 style="{}">(UNT Edition)</h2>'.format(subheader_style), unsafe_allow_html=True)
 st.sidebar.header("Search for a Professor or Class")
+#Case for compare checkbox
 if st.sidebar.checkbox("Compare"):
     professor_name = st.sidebar.text_input("Professor Name", placeholder = "First Last")
     class_name = st.sidebar.text_input("Class Name", placeholder = "Class Name")
@@ -237,6 +238,7 @@ if st.sidebar.checkbox("Compare"):
     class_name2 = st.sidebar.text_input("(Additional) Class Name", placeholder = "Class Name")
     if st.sidebar.button("Compare"):
         title = 1
+        #Checks for duplicates
         if checkFields(professor_name, professor_name2):
             st.title("Fields are the same!")
         elif checkFields(class_name, class_name2):
@@ -245,6 +247,7 @@ if st.sidebar.checkbox("Compare"):
             compare = 1
             with col1:
                 if professor_name:
+                    #Calls functions for data
                     rateMyProfessor(professor_name)
                     if not class_name:
                         st.subheader(f"Student Grades for Professor {professor_name}")
@@ -258,6 +261,7 @@ if st.sidebar.checkbox("Compare"):
                     pi(professor_name, class_name) 
             with col2:         
                 if professor_name2:
+                    #Calls functions for data
                     rateMyProfessor(professor_name2)
                     if not class_name2:
                         st.subheader(f"Student Grades for Professor {professor_name2}")
@@ -275,6 +279,7 @@ else:
     if st.sidebar.button("Search"):
         title = 1
         if professor_name:
+            #Calls functions for data
             with col3:
                 rateMyProfessor(professor_name)
             if not class_name:
@@ -282,6 +287,7 @@ else:
             else:
                 st.subheader(f"Student Grades for {class_name} by Professor {professor_name}")    
             gradeJSON(professor_name, class_name)
+            #Calls functions for data
             with col4:
                 pi(professor_name, class_name)
         elif class_name:

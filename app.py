@@ -72,8 +72,6 @@ def rateMyProfessor(professor_name):
 def gradeJSON(professor_name, class_name):
             st.sidebar.text("Professor Found!")
 
-            st.subheader(f"Grades for Professor: {professor_name} and Class: {class_name}")
-
             # Filter the DataFrame for the specific professor and class
             filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
 

@@ -1,6 +1,6 @@
 # Scrape-My-Professor
 
-##Links
+## Links
 
 Demo Video: https://www.youtube.com/watch?v=OLYwIEPwbHw&t=2s
 

@@ -113,18 +113,7 @@ def rateMyProfessor(professor_name):
 #Function to display Grades in Bar Graph
 def gradeJSON(professor_name, class_name):
     # Filter the DataFrame for the specific professor and class
-    filtered_data = df[(df["prof"].apply(lambda x: name_match(x, professor_name))) & (df["desc"].str.contains(class_name, case=False))]
-
-    def normalize_name(name):
-        parts = name.lower().split()
-        return sorted(parts)
-
-    def name_match(prof_name, search_name):
-        prof_parts = normalize_name(prof_name.replace(",", " "))
-        search_parts = normalize_name(search_name)
-        # Check if all search parts are present in the professor's parts
-        return all(part in prof_parts for part in search_parts)
-
+    filtered_data = df[(df["prof"].str.contains(professor_name, case=False)) & (df["desc"].str.contains(class_name, case=False))]
 
     if not filtered_data.empty:
         # Combine grades for all terms

@@ -115,24 +115,15 @@ def gradeJSON(professor_name, class_name):
     # Filter the DataFrame for the specific professor and class
     filtered_data = df[(df["prof"].apply(lambda x: name_match(x, professor_name))) & (df["desc"].str.contains(class_name, case=False))]
 
-
     def normalize_name(name):
-        # Split the name into parts
         parts = name.lower().split()
-        # Handle both "First Last" and "Last, First"
-        if ',' in name:
-            # For names like "Doe,Jon", reverse the parts
-            parts = [part.strip() for part in name.split(',')]
-            if len(parts) == 2:
-                parts = [parts[1], parts[0]]
         return sorted(parts)
 
     def name_match(prof_name, search_name):
-        prof_parts = normalize_name(prof_name)
+        prof_parts = normalize_name(prof_name.replace(",", " "))
         search_parts = normalize_name(search_name)
         # Check if all search parts are present in the professor's parts
         return all(part in prof_parts for part in search_parts)
-
 
 
     if not filtered_data.empty:

@@ -45,7 +45,7 @@ def colored_box(value, color):
 def checkFields(name1, name2):
     return name1.strip().lower() == name2.strip().lower() if name1 and name2 else False
 
-#Function to get Rate My Professors Data
+########Function to get Rate My Professors Data########
 def rateMyProfessor(professor_name):
     professor = ratemyprofessor.get_professor_by_school_and_name(ratemyprofessor.get_school_by_name("University of North Texas"), professor_name)
     if professor is None:
